@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="SpaceMap" load_steps=7 format=3 uid="uid://knafjllwdxjq"]
+
+[ext_resource type="Script" path="res://modules/space_map_generator/space_map_region.gd" id="1_lrjqq"]
+[ext_resource type="Script" path="res://modules/space_map_generator/space_map.gd" id="1_uarfx"]
+[ext_resource type="Texture2D" uid="uid://c83gs73pwx2cy" path="res://modules/tilemap_from_space_map_loader/test/map_texture.tres" id="3_em8hv"]
+
+[sub_resource type="Resource" id="Resource_05t6e"]
+script = ExtResource("1_lrjqq")
+id = &"grass"
+color = Color(0, 1, 0, 1)
+
+[sub_resource type="Resource" id="Resource_4tg3a"]
+script = ExtResource("1_lrjqq")
+id = &"dirt"
+color = Color(1, 0, 0, 1)
+
+[sub_resource type="Resource" id="Resource_tpwxl"]
+script = ExtResource("1_lrjqq")
+id = &"rock"
+color = Color(0, 0, 1, 1)
+
+[resource]
+script = ExtResource("1_uarfx")
+texture = ExtResource("3_em8hv")
+regions = Array[ExtResource("1_lrjqq")]([SubResource("Resource_05t6e"), SubResource("Resource_4tg3a"), SubResource("Resource_tpwxl")])

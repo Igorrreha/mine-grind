@@ -1,0 +1,50 @@
+[gd_scene load_steps=9 format=3 uid="uid://cin438dghm2mf"]
+
+[ext_resource type="TileSet" uid="uid://cciq6mwg25v4u" path="res://modules/tilemap_from_space_map_loader/test/test_tileset.tres" id="1_7gdai"]
+[ext_resource type="Script" path="res://modules/tilemap_from_space_map_loader/loader.gd" id="2_eobqd"]
+[ext_resource type="Script" path="res://modules/tilemap_from_space_map_loader/space_map_tile_props.gd" id="3_i32hd"]
+[ext_resource type="Script" path="res://modules/tilemap_from_space_map_loader/test/test_map_loader.gd" id="4_2f4l1"]
+[ext_resource type="Resource" uid="uid://knafjllwdxjq" path="res://modules/tilemap_from_space_map_loader/test/test_space_map.tres" id="5_c714f"]
+
+[sub_resource type="Resource" id="Resource_7gcbo"]
+script = ExtResource("3_i32hd")
+region_name = &"grass"
+atlas_id = 1
+atlas_coords = Vector2i(0, 0)
+is_terrain = true
+
+[sub_resource type="Resource" id="Resource_yhv6i"]
+script = ExtResource("3_i32hd")
+region_name = &"rock"
+atlas_id = 0
+atlas_coords = Vector2i(1, 0)
+is_terrain = false
+
+[sub_resource type="Resource" id="Resource_7mqkw"]
+script = ExtResource("3_i32hd")
+region_name = &"dirt"
+atlas_id = 0
+atlas_coords = Vector2i(1, 1)
+is_terrain = false
+
+[node name="Test" type="Node2D"]
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource("1_7gdai")
+format = 2
+layer_0/navigation_enabled = false
+layer_0/tile_data = PackedInt32Array(262150, 65537, 0, 393221, 1, 1, 458757, 1, 1, 458758, 65537, 1, 458759, 65537, 1, 393224, 65537, 0, 327688, 65537, 0, 262151, 65537, 0, 262149, 1, 1, 327685, 1, 1, 262152, 65537, 0, 458760, 65537, 0, 327686, 65537, 0, 393222, 65537, 0, 393223, 65537, 0, 327687, 65537, 0, 524293, 1, 1, 524294, 65537, 1, 524295, 65537, 1, 524296, 65537, 0, 196616, 65537, 0, 196615, 1, 0, 196614, 1, 0, 196613, 1, 1)
+
+[node name="Loader" type="Node" parent="." node_paths=PackedStringArray("_tilemap")]
+script = ExtResource("2_eobqd")
+_tiles_props = Array[ExtResource("3_i32hd")]([SubResource("Resource_7gcbo"), SubResource("Resource_yhv6i"), SubResource("Resource_7mqkw")])
+_tilemap = NodePath("../TileMap")
+
+[node name="TestMapLoader" type="Node" parent="." node_paths=PackedStringArray("_map_loader")]
+script = ExtResource("4_2f4l1")
+_map_loader = NodePath("../Loader")
+_map = ExtResource("5_c714f")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(1059, 549)
+zoom = Vector2(0.5, 0.5)
