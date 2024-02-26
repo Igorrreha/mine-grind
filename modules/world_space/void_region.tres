@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="WorldSpaceChunkMapRegion" load_steps=2 format=3 uid="uid://brgw7l2nrl01e"]
+
+[ext_resource type="Script" path="res://modules/world_space/world_space_chunk_map_region.gd" id="1_e5y8u"]
+
+[resource]
+resource_name = "void"
+script = ExtResource("1_e5y8u")
+color = Color(0, 0, 0, 0)

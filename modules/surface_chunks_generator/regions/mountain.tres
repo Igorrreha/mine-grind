@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="WorldSpaceChunkMapRegion" load_steps=2 format=3 uid="uid://co84dclbjbhw"]
+
+[ext_resource type="Script" path="res://modules/world_space/world_space_chunk_map_region.gd" id="1_h8023"]
+
+[resource]
+resource_name = "mountain"
+script = ExtResource("1_h8023")
+color = Color(0.172549, 0.172549, 0.172549, 1)

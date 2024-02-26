@@ -1,0 +1,71 @@
+[gd_scene load_steps=16 format=3 uid="uid://g1lww2mf2dld"]
+
+[ext_resource type="Script" path="res://modules/surface_chunks_generator/surface_chunks_generator.gd" id="1_8vn2s"]
+[ext_resource type="Resource" uid="uid://bd0coy2hunvpq" path="res://modules/test/world_space.tres" id="2_2q38h"]
+[ext_resource type="Resource" uid="uid://cvuc4m8u2fsy5" path="res://modules/test/chunk_types/surface.tres" id="3_o2yar"]
+[ext_resource type="Resource" uid="uid://tqivvlb1waoq" path="res://modules/surface_chunks_generator/regions/water.tres" id="4_qc4k0"]
+[ext_resource type="Resource" uid="uid://cepg5udhsckwt" path="res://modules/surface_chunks_generator/regions/land.tres" id="5_md1w2"]
+[ext_resource type="Resource" uid="uid://co84dclbjbhw" path="res://modules/surface_chunks_generator/regions/mountain.tres" id="6_6buf6"]
+[ext_resource type="Script" path="res://modules/sprite_chunks_visualizer/sprite_chunks_visualizer.gd" id="7_tjowf"]
+[ext_resource type="TileSet" uid="uid://cciq6mwg25v4u" path="res://modules/test/test_tileset.tres" id="8_8ikj1"]
+[ext_resource type="Script" path="res://modules/tilemap_world_space_visualizer/tilemap_world_space_visualizer.gd" id="9_pmdxn"]
+[ext_resource type="Script" path="res://modules/tilemap_world_space_visualizer/region_tile_props.gd" id="10_b20fh"]
+[ext_resource type="Script" path="res://modules/mouse_clicked_signal_emitter/mouse_clicked_signal_emitter.gd" id="11_wfd44"]
+
+[sub_resource type="Resource" id="Resource_2fjef"]
+script = ExtResource("10_b20fh")
+atlas_id = 0
+is_terrain = false
+terrain_id = 0
+tile_coords = Vector2i(13, 1)
+
+[sub_resource type="Resource" id="Resource_fmt0o"]
+script = ExtResource("10_b20fh")
+atlas_id = 0
+is_terrain = true
+terrain_id = 0
+tile_coords = Vector2i(4, 4)
+
+[sub_resource type="Resource" id="Resource_a0nlr"]
+script = ExtResource("10_b20fh")
+atlas_id = 0
+is_terrain = true
+terrain_id = 1
+tile_coords = Vector2i(10, 4)
+
+[sub_resource type="Curve" id="Curve_0dxju"]
+max_value = 2.0
+_data = [Vector2(0, 0), 0.0, 2.85714, 0, 1, Vector2(0.35, 1), 2.85714, 2.0, 1, 1, Vector2(0.85, 2), 2.0, 0.0, 1, 0]
+point_count = 3
+metadata/_snap_enabled = true
+metadata/_snap_count = 20
+
+[node name="Test" type="Node2D"]
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource("8_8ikj1")
+format = 2
+script = ExtResource("9_pmdxn")
+_world_space = ExtResource("2_2q38h")
+_tile_props_by_region = {
+ExtResource("4_qc4k0"): SubResource("Resource_2fjef"),
+ExtResource("5_md1w2"): SubResource("Resource_fmt0o"),
+ExtResource("6_6buf6"): SubResource("Resource_a0nlr")
+}
+
+[node name="SurfaceGenerator" type="Node" parent="."]
+script = ExtResource("1_8vn2s")
+_world_space = ExtResource("2_2q38h")
+_chunk_type = ExtResource("3_o2yar")
+_grid_size = Vector2i(32, 32)
+_regions = Array[Resource("res://modules/world_space/world_space_chunk_map_region.gd")]([ExtResource("4_qc4k0"), ExtResource("5_md1w2"), ExtResource("6_6buf6")])
+_regions_distribution = SubResource("Curve_0dxju")
+
+[node name="ChunksVisualizer" type="Node" parent="."]
+script = ExtResource("7_tjowf")
+_world_space = ExtResource("2_2q38h")
+
+[node name="MouseClickedSignalEmitter" type="Node" parent="."]
+script = ExtResource("11_wfd44")
+
+[connection signal="mouse_clicked_at_floor" from="MouseClickedSignalEmitter" to="SurfaceGenerator" method="generate_at"]

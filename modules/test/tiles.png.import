@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cxbxnbmscncj2"
-path="res://.godot/imported/test_map_grass.png-d039dfa3e2a674c457903f6320281c60.ctex"
+uid="uid://cjo04lbfmrnty"
+path="res://.godot/imported/tiles.png-810d7beb2779f2c3bf85eaa348914dcb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://modules/tilemap_from_space_map_loader/test/test_map_grass.png"
-dest_files=["res://.godot/imported/test_map_grass.png-d039dfa3e2a674c457903f6320281c60.ctex"]
+source_file="res://modules/test/tiles.png"
+dest_files=["res://.godot/imported/tiles.png-810d7beb2779f2c3bf85eaa348914dcb.ctex"]
 
 [params]
 

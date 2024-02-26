@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="WorldSpaceChunkType" load_steps=2 format=3 uid="uid://cvuc4m8u2fsy5"]
+
+[ext_resource type="Script" path="res://modules/world_space/world_space_chunk_type.gd" id="1_xv8iv"]
+
+[resource]
+resource_name = "surface"
+script = ExtResource("1_xv8iv")

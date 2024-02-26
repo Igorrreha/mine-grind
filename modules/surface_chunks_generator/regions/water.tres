@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="WorldSpaceChunkMapRegion" load_steps=2 format=3 uid="uid://tqivvlb1waoq"]
+
+[ext_resource type="Script" path="res://modules/world_space/world_space_chunk_map_region.gd" id="1_jl023"]
+
+[resource]
+resource_name = "water"
+script = ExtResource("1_jl023")
+color = Color(0.341176, 0.603922, 0.701961, 1)

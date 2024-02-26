@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="WorldSpaceChunkMapRegion" load_steps=2 format=3 uid="uid://cepg5udhsckwt"]
+
+[ext_resource type="Script" path="res://modules/world_space/world_space_chunk_map_region.gd" id="1_2hxgv"]
+
+[resource]
+resource_name = "land"
+script = ExtResource("1_2hxgv")
+color = Color(0, 0.596078, 0, 1)
