@@ -4,11 +4,11 @@ extends Node
 signal mouse_clicked_at(global_position: Vector2)
 signal mouse_idx_clicked_at(idx: int, global_position: Vector2)
 
-signal mouse_clicked_at_floor(global_position: Vector2i)
-signal mouse_idx_clicked_at_floor(idx: int, global_position: Vector2i)
-
 signal mouse_clicked()
 signal mouse_idx_clicked(idx: int)
+
+signal lmb_clicked_at(global_position: Vector2i)
+signal rmb_clicked_at(global_position: Vector2i)
 
 
 func _input(event: InputEvent) -> void:
@@ -20,8 +20,10 @@ func _input(event: InputEvent) -> void:
 		mouse_clicked_at.emit(event.global_position)
 		mouse_idx_clicked_at.emit(event.button_index, event.global_position)
 		
-		mouse_clicked_at_floor.emit(event.global_position.floor())
-		mouse_idx_clicked_at_floor.emit(event.button_index, event.global_position.floor())
-		
 		mouse_clicked.emit()
 		mouse_idx_clicked.emit(event.button_index)
+		
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			lmb_clicked_at.emit(event.global_position)
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			rmb_clicked_at.emit(event.global_position)

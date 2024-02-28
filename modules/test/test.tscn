@@ -35,7 +35,7 @@ tile_coords = Vector2i(10, 4)
 
 [sub_resource type="Curve" id="Curve_0dxju"]
 max_value = 2.0
-_data = [Vector2(0, 0), 0.0, 2.85714, 0, 1, Vector2(0.35, 1), 2.85714, 2.0, 1, 1, Vector2(0.85, 2), 2.0, 0.0, 1, 0]
+_data = [Vector2(0, 0), 0.0, 5.0, 0, 1, Vector2(0.2, 1), 5.0, 1.53846, 1, 1, Vector2(0.85, 2), 1.53846, 0.0, 1, 0]
 point_count = 3
 metadata/_snap_enabled = true
 metadata/_snap_count = 20
@@ -68,4 +68,4 @@ _world_space = ExtResource("2_2q38h")
 [node name="MouseClickedSignalEmitter" type="Node" parent="."]
 script = ExtResource("11_wfd44")
 
-[connection signal="mouse_clicked_at_floor" from="MouseClickedSignalEmitter" to="SurfaceGenerator" method="generate_at"]
+[connection signal="lmb_clicked_at" from="MouseClickedSignalEmitter" to="SurfaceGenerator" method="generate_at"]

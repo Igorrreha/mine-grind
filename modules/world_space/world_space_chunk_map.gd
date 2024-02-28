@@ -5,14 +5,22 @@ extends Resource
 static var void_region := \
 	load("res://modules/world_space/void_region.tres") as WorldSpaceChunkMapRegion
 
+static var _items_by_id: Dictionary#[int, WorldSpaceChunkMap]
 
-var id: int
+
+var id: int:
+	set(v):
+		_items_by_id.erase(v)
+		id = v
+		_items_by_id[id] = self
+
 var image: Image
 var regions: Array[WorldSpaceChunkMapRegion]
 
 var _regions_by_color: Dictionary
 
 
+#region Static methods
 static func create(size: Vector2i,
 	regions: Array[WorldSpaceChunkMapRegion]) -> WorldSpaceChunkMap:
 	
@@ -78,8 +86,26 @@ static func save(map: WorldSpaceChunkMap) -> void:
 		WorldSpaceChunkMapRegion.save(region)
 
 
+static func load_from_save(id: int) -> WorldSpaceChunkMap:
+	var save = FileAccess\
+		.open(_get_save_path(id), FileAccess.READ)\
+		.get_var(true)
+	
+	var loaded_object = WorldSpaceChunkMap.new()
+	loaded_object.id = save.id
+	loaded_object.regions.assign(save.regions_ids.map(func(region_id: int):
+		return WorldSpaceChunkMapRegion.load_from_save(region_id)))
+	
+	var image = Image.create_from_data(save.image_width, save.image_height, false,
+		Image.FORMAT_RGBA8, save.image_data)
+	loaded_object.image = image
+	
+	return loaded_object
+
+
 static func _get_save_path(id: int) -> String:
-	return "user://world_space/chunk/%s" % id
+	return "user://world_space/chunk/map/%s" % id
+#endregion
 
 
 func _init() -> void:

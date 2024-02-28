@@ -2,6 +2,9 @@ class_name WorldSpaceChunkMapRegion
 extends Resource
 
 
+static var _items_by_id: Dictionary#[int, WorldSpaceChunkMapRegion]
+
+
 @export var color: Color:
 	get:
 		if not _color8:
@@ -9,10 +12,16 @@ extends Resource
 		
 		return _color8
 
-var id: int
+var id: int:
+	set(v):
+		_items_by_id.erase(v)
+		id = v
+		_items_by_id[id] = self
+
 var _color8: Color 
 
 
+#region Static methods
 static func save(region: WorldSpaceChunkMapRegion) -> void:
 	FileAccess\
 		.open(_get_save_path(region.id), FileAccess.WRITE)\
@@ -29,13 +38,14 @@ static func load_from_save(id: int) -> WorldSpaceChunkMapRegion:
 	
 	var loaded_region = WorldSpaceChunkMapRegion.new()
 	loaded_region.id = id
-	loaded_region.color = save.color
+	loaded_region.color = Color(save.color)
 	
 	return loaded_region
 
 
 static func _get_save_path(id: int) -> String:
 	return "user://world_space/chunk/map/region/%s" % id
+#endregion
 
 
 func _init() -> void:

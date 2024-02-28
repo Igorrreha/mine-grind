@@ -6,13 +6,18 @@ extends Node
 
 
 func _ready() -> void:
-	_world_space.chunk_appended.connect(_on_chunk_appended)
+	_world_space.chunk_activated.connect(_show_chunk)
+	_world_space.chunk_deactivated.connect(_hide_chunk)
 
 
-func _on_chunk_appended(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> void:
+func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> void:
 	var sprite = Sprite2D.new()
 	sprite.texture = ImageTexture.create_from_image(chunk.map.image)
 	sprite.position = chunk.rect.position
 	sprite.centered = false
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(sprite)
+
+
+func _hide_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> void:
+	pass

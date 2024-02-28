@@ -2,56 +2,67 @@ class_name WorldSpaceChunk
 extends Resource
 
 
-var id: int
+static var _items_by_id: Dictionary#[int, WorldSpaceChunk]
+
+var id: int:
+	set(v):
+		_items_by_id.erase(v)
+		id = v
+		_items_by_id[id] = self
+
 var rect: Rect2i
 var map: WorldSpaceChunkMap:
 	set(v):
 		if v:
-			map_id = map.id
 			map = v
+			map_id = map.id
 var map_id: int
 
-var _is_saved: bool
+var _is_dirty: bool
+
+
+#region Static methods
+static func save(chunk: WorldSpaceChunk) -> void:
+	var path = _get_save_path(chunk.id)
+	FileAccess\
+		.open(path, FileAccess.WRITE)\
+		.store_var({
+			"id": chunk.id,
+			"rect": chunk.rect,
+			"map_id": chunk.map_id,
+		})
 
 
 static func load_from_save(id: int) -> WorldSpaceChunk:
-	var save_file = FileAccess.open(_get_save_path(id), FileAccess.READ)
-	var save = save_file.get_var(true)
+	var save = FileAccess\
+		.open(_get_save_path(id), FileAccess.READ)\
+		.get_var(true)
 	
-	var loaded_chunk = WorldSpaceChunk.new()
-	loaded_chunk.id = save.id
-	loaded_chunk.rect = save.rect
-	loaded_chunk.map_id = save.map_id
-	return loaded_chunk
+	var loaded_object = WorldSpaceChunk.new()
+	loaded_object.id = save.id
+	loaded_object.rect = save.rect
+	loaded_object.map_id = save.map_id
+	
+	return loaded_object
 
 
 static func _get_save_path(id: int) -> String:
 	return "user://world_space/chunk/%s" % id
+#endregion
 
 
 func _init() -> void:
 	id = randi()
 
 
-func _is_active() -> bool:
-	return map != null
-
-
 func activate() -> void:
 	if not _is_active():
-		load_map()
+		load_content()
 
 
-func load_map() -> void:
-	pass
+func load_content() -> void:
+	map = WorldSpaceChunkMap.load_from_save(map_id)
 
 
-func save() -> void:
-	var path = _get_save_path(id)
-	var save = {
-		"id": id,
-		"rect": rect,
-		"map_id": map_id,
-	}
-	FileAccess.open(path, FileAccess.WRITE).store_var(save)
-
+func _is_active() -> bool:
+	return map != null

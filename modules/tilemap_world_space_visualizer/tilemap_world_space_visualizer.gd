@@ -69,4 +69,7 @@ func _is_tile_in_terrain(point: Vector2i, terrain_id: int, terrain_set_id: int) 
 
 
 func _hide_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> void:
-	pass
+	for x in range(chunk.rect.position.x, chunk.rect.end.x):
+		for y in range(chunk.rect.position.y, chunk.rect.end.y):
+			var tile_position = Vector2i(x, y)
+			erase_cell(0, tile_position)
