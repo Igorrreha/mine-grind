@@ -4,6 +4,7 @@ extends TileMap
 
 @export var _world_space: WorldSpace
 @export var _tile_props_by_region: Dictionary#[WorldSpaceChunkMapRegion, RegionTileProps]
+@export var _displayed_chunk_types: Array[WorldSpaceChunkType]
 
 
 func _ready() -> void:
@@ -12,6 +13,9 @@ func _ready() -> void:
 
 
 func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> void:
+	if not _displayed_chunk_types.has(chunk_type):
+		return
+	
 	var terrain_members: Dictionary
 	
 	for x in range(chunk.rect.position.x, chunk.rect.end.x):
@@ -69,6 +73,9 @@ func _is_tile_in_terrain(point: Vector2i, terrain_id: int, terrain_set_id: int) 
 
 
 func _hide_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> void:
+	if not _displayed_chunk_types.has(chunk_type):
+		return
+	
 	for x in range(chunk.rect.position.x, chunk.rect.end.x):
 		for y in range(chunk.rect.position.y, chunk.rect.end.y):
 			var tile_position = Vector2i(x, y)

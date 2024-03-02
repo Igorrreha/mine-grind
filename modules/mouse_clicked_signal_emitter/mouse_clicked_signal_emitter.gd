@@ -13,8 +13,6 @@ signal rmb_clicked_at(global_position: Vector2i)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
-		var floor = Vector2i(event.global_position.floor())
-		
 		event = event as InputEventMouseButton
 		
 		mouse_clicked_at.emit(event.global_position)

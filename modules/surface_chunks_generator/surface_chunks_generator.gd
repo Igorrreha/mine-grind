@@ -24,7 +24,6 @@ func generate_at(point: Vector2i) -> void:
 
 func generate_map(rect: Rect2i) -> WorldSpaceChunkMap:
 	var map := WorldSpaceChunkMap.create(rect.size, _regions)
-	var image_data: PackedByteArray
 	
 	for y in range(rect.position.y, rect.position.y + rect.size.y):
 		for x in range(rect.position.x, rect.position.x + rect.size.x):

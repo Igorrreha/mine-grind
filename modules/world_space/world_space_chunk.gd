@@ -14,18 +14,22 @@ var rect: Rect2i
 var map: WorldSpaceChunkMap:
 	set(v):
 		if v:
-			map = v
-			map_id = map.id
-var map_id: int
+			map_id = v.id
+		
+		map = v
 
-var _is_dirty: bool
+var map_id: int
 
 
 #region Static methods
 static func save(chunk: WorldSpaceChunk) -> void:
-	var path = _get_save_path(chunk.id)
+	var save_path = _get_save_path(chunk.id)
+	var save_dir_path = save_path.get_base_dir()
+	if not DirAccess.dir_exists_absolute(save_dir_path):
+		DirAccess.make_dir_recursive_absolute(save_dir_path)
+	
 	FileAccess\
-		.open(path, FileAccess.WRITE)\
+		.open(save_path, FileAccess.WRITE)\
 		.store_var({
 			"id": chunk.id,
 			"rect": chunk.rect,
@@ -33,21 +37,24 @@ static func save(chunk: WorldSpaceChunk) -> void:
 		})
 
 
-static func load_from_save(id: int) -> WorldSpaceChunk:
-	var save = FileAccess\
-		.open(_get_save_path(id), FileAccess.READ)\
+static func load_from_save(object_id: int) -> WorldSpaceChunk:
+	if _items_by_id.has(object_id):
+		return _items_by_id[object_id]
+	
+	var save_data = FileAccess\
+		.open(_get_save_path(object_id), FileAccess.READ)\
 		.get_var(true)
 	
 	var loaded_object = WorldSpaceChunk.new()
-	loaded_object.id = save.id
-	loaded_object.rect = save.rect
-	loaded_object.map_id = save.map_id
+	loaded_object.id = save_data.id
+	loaded_object.rect = save_data.rect
+	loaded_object.map_id = save_data.map_id
 	
 	return loaded_object
 
 
-static func _get_save_path(id: int) -> String:
-	return "user://world_space/chunk/%s" % id
+static func _get_save_path(object_id: int) -> String:
+	return "user://world_space/chunk/%s" % object_id
 #endregion
 
 
@@ -55,14 +62,22 @@ func _init() -> void:
 	id = randi()
 
 
-func activate() -> void:
-	if not _is_active():
+func try_activate() -> bool:
+	if map == null:
 		load_content()
+		return true
+	
+	return false
+
+
+func try_deactivate() -> bool:
+	if map == null:
+		return false
+	
+	WorldSpaceChunkMap.save(map)
+	map = null
+	return true
 
 
 func load_content() -> void:
 	map = WorldSpaceChunkMap.load_from_save(map_id)
-
-
-func _is_active() -> bool:
-	return map != null

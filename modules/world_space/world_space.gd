@@ -40,17 +40,24 @@ static func save(space: WorldSpace) -> void:
 			WorldSpaceChunk.save(chunk)
 	
 	if space._is_dirty:
-		var path = _get_save_path(space.id)
-		FileAccess.open(path, FileAccess.WRITE).store_var({
+		var save_path = _get_save_path(space.id)
+		var save_dir_path = save_path.get_base_dir()
+		if not DirAccess.dir_exists_absolute(save_dir_path):
+			DirAccess.make_dir_recursive_absolute(save_dir_path)
+		
+		FileAccess.open(save_path, FileAccess.WRITE).store_var({
 			"id": space.id,
 			"boundaries": space._boundaries,
 			"chunks_by_type_ids": space._chunks_by_type_ids,
 		})
 
 
-static func load_from_save(id: int) -> WorldSpace:
+static func load_from_save(object_id: int) -> WorldSpace:
+	if _items_by_id.has(object_id):
+		return _items_by_id[object_id]
+	
 	var save_data = FileAccess\
-		.open(_get_save_path(id), FileAccess.READ)\
+		.open(_get_save_path(object_id), FileAccess.READ)\
 		.get_var(true)
 	
 	var loaded_object = WorldSpace.new()
@@ -61,8 +68,8 @@ static func load_from_save(id: int) -> WorldSpace:
 	return loaded_object
 
 
-static func _get_save_path(id: int) -> String:
-	return "user://world_space/%s" % id
+static func _get_save_path(object_id: int) -> String:
+	return "user://world_space/%s" % object_id
 #endregion
 
 
@@ -131,3 +138,35 @@ func has_chunk_of_type_at(chunk_type: WorldSpaceChunkType, point: Vector2i) -> b
 			return true
 	
 	return false
+
+
+func activate_chunks_at(point: Vector2i) -> void:
+	for chunk_type in _chunks_by_type:
+		for chunk: WorldSpaceChunk in _chunks_by_type[chunk_type]:
+			if chunk.rect.has_point(point)\
+			and chunk.try_activate():
+				chunk_activated.emit(chunk, chunk_type)
+
+
+func deactivate_chunks_at(point: Vector2i) -> void:
+	for chunk_type in _chunks_by_type:
+		for chunk: WorldSpaceChunk in _chunks_by_type[chunk_type]:
+			if chunk.rect.has_point(point)\
+			and chunk.try_deactivate():
+				chunk_deactivated.emit(chunk, chunk_type)
+
+
+func activate_chunks_intersects(rect: Rect2i) -> void:
+	for chunk_type in _chunks_by_type:
+		for chunk: WorldSpaceChunk in _chunks_by_type[chunk_type]:
+			if chunk.rect.intersects(rect)\
+			and chunk.try_activate():
+				chunk_activated.emit(chunk, chunk_type)
+
+
+func deactivate_chunks_intersects(rect: Rect2i) -> void:
+	for chunk_type in _chunks_by_type:
+		for chunk: WorldSpaceChunk in _chunks_by_type[chunk_type]:
+			if chunk.rect.intersects(rect)\
+			and chunk.try_deactivate():
+				chunk_deactivated.emit(chunk, chunk_type)
