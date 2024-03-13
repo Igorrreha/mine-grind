@@ -2,15 +2,33 @@ class_name WorldSpaceChunk
 extends Resource
 
 
-static var _items_by_id: Dictionary#[int, WorldSpaceChunk]
+signal activated
+signal deactivated
 
-var id: int:
+
+static var _items_by_id: Dictionary#[int, WeakRef[WorldSpaceChunk]]
+
+@export var id: int:
 	set(v):
 		_items_by_id.erase(v)
 		id = v
-		_items_by_id[id] = self
+		_items_by_id[id] = weakref(self)
 
-var rect: Rect2i
+var rect: Rect2i:
+	set(v):
+		rect = v
+		shape = RectangleShape2D.new()
+		shape.size = rect.size
+		
+		transform = Transform2D(0, rect.position)
+
+var shape: RectangleShape2D
+var transform: Transform2D
+
+var is_active:
+	get:
+		return map != null
+
 var map: WorldSpaceChunkMap:
 	set(v):
 		if v:
@@ -35,11 +53,16 @@ static func save(chunk: WorldSpaceChunk) -> void:
 			"rect": chunk.rect,
 			"map_id": chunk.map_id,
 		})
+	
+	if chunk.map:
+		WorldSpaceChunkMap.save(chunk.map)
 
 
 static func load_from_save(object_id: int) -> WorldSpaceChunk:
 	if _items_by_id.has(object_id):
-		return _items_by_id[object_id]
+		var ref = _items_by_id[object_id].get_ref()
+		if ref != null:
+			return ref
 	
 	var save_data = FileAccess\
 		.open(_get_save_path(object_id), FileAccess.READ)\
@@ -59,12 +82,18 @@ static func _get_save_path(object_id: int) -> String:
 
 
 func _init() -> void:
-	id = randi()
+	if id == 0:
+		id = randi()
+
+
+func intersects(other_shape: Shape2D, other_shape_transform: Transform2D) -> bool:
+	return shape.collide(transform, other_shape, other_shape_transform)
 
 
 func try_activate() -> bool:
 	if map == null:
 		load_content()
+		activated.emit()
 		return true
 	
 	return false
@@ -76,6 +105,7 @@ func try_deactivate() -> bool:
 	
 	WorldSpaceChunkMap.save(map)
 	map = null
+	deactivated.emit()
 	return true
 
 

@@ -2,12 +2,19 @@ class_name TileMapWorldSpaceVisualizer
 extends TileMap
 
 
+@export var _active: bool = true
+
+
 @export var _world_space: WorldSpace
 @export var _tile_props_by_region: Dictionary#[WorldSpaceChunkMapRegion, RegionTileProps]
 @export var _displayed_chunk_types: Array[WorldSpaceChunkType]
 
 
 func _ready() -> void:
+	if not _active:
+		queue_free()
+		return
+	
 	_world_space.chunk_activated.connect(_show_chunk)
 	_world_space.chunk_deactivated.connect(_hide_chunk)
 

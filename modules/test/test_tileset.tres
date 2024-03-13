@@ -446,6 +446,7 @@ texture = ExtResource("1_t5l8v")
 13:5/0 = 0
 14:5/0 = 0
 14:4/0 = 0
+2:16/0 = 0
 
 [resource]
 terrain_set_0/mode = 0

@@ -6,3 +6,4 @@
 resource_name = "water"
 script = ExtResource("1_jl023")
 color = Color(0.341176, 0.603922, 0.701961, 1)
+id = 2177355033

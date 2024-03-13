@@ -1,15 +1,23 @@
-[gd_resource type="Resource" script_class="WorldSpace" load_steps=7 format=3 uid="uid://bd0coy2hunvpq"]
+[gd_resource type="Resource" script_class="WorldSpace" load_steps=9 format=3 uid="uid://bd0coy2hunvpq"]
 
 [ext_resource type="Script" path="res://modules/world_space/world_space_noise.gd" id="1_iu0if"]
 [ext_resource type="Script" path="res://modules/world_space/world_space.gd" id="1_tsi62"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_y5lnv"]
-frequency = 0.08
+frequency = 0.0494
 fractal_octaves = 1
 
 [sub_resource type="Resource" id="Resource_13pep"]
 script = ExtResource("1_iu0if")
 _noise = SubResource("FastNoiseLite_y5lnv")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_08x01"]
+frequency = 0.04
+fractal_octaves = 1
+
+[sub_resource type="Resource" id="Resource_74fjn"]
+script = ExtResource("1_iu0if")
+_noise = SubResource("FastNoiseLite_08x01")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_spb02"]
 frequency = 0.005
@@ -23,7 +31,9 @@ _noise = SubResource("FastNoiseLite_spb02")
 script = ExtResource("1_tsi62")
 _props = {
 "height": SubResource("Resource_13pep"),
+"rich": SubResource("Resource_74fjn"),
 "temperature": SubResource("Resource_tavm6")
 }
 _infinite = true
+id = 4156566843
 _boundaries = Rect2i(0, 0, 0, 0)

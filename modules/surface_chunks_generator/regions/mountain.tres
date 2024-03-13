@@ -6,3 +6,4 @@
 resource_name = "mountain"
 script = ExtResource("1_h8023")
 color = Color(0.172549, 0.172549, 0.172549, 1)
+id = 2177355032

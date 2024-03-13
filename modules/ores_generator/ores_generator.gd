@@ -1,9 +1,11 @@
-class_name SurfaceGenerator
+class_name OresGenerator
 extends Node
 
 
 @export var _world_space: WorldSpace
 @export var _chunk_type: WorldSpaceChunkType
+@export var _surface_chunk_type: WorldSpaceChunkType
+@export var _rock_region: WorldSpaceChunkMapRegion
 @export var _grid_size: Vector2i
 
 @export_group("Regions")
@@ -34,8 +36,12 @@ func _generate_map(rect: Rect2i) -> WorldSpaceChunkMap:
 	for y in range(rect.position.y, rect.position.y + rect.size.y):
 		for x in range(rect.position.x, rect.position.x + rect.size.x):
 			var world_point = Vector2i(x, y)
-			var height = _world_space.get_prop_value_at("height", world_point)
-			var region_idx = floori(_regions_distribution.sample_baked(height))
+			var rich = _world_space.get_prop_value_at("rich", world_point)
+			
+			var surface_region := _world_space.get_chunk_region_at(_surface_chunk_type, world_point)
+			
+			var region_idx = floori(_regions_distribution.sample_baked(rich))\
+				if surface_region == _rock_region else 0
 			
 			map.set_region_at(_regions[region_idx], world_point - rect.position)
 	

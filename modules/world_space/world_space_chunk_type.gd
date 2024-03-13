@@ -2,13 +2,13 @@ class_name WorldSpaceChunkType
 extends Resource
 
 
-static var _items_by_id: Dictionary#[int, WorldSpaceChunkType]
+static var _items_by_id: Dictionary#[int, WeakRef[WorldSpaceChunkType]]
 
-var id: int:
+@export var id: int:
 	set(v):
 		_items_by_id.erase(v)
 		id = v
-		_items_by_id[id] = self
+		_items_by_id[id] = weakref(self)
 
 
 #region Static methods
@@ -25,7 +25,9 @@ static func save(object_to_save: WorldSpaceChunkType) -> void:
 
 static func load_from_save(object_id: int) -> WorldSpaceChunkType:
 	if _items_by_id.has(object_id):
-		return _items_by_id[object_id]
+		var ref = _items_by_id[object_id].get_ref()
+		if ref != null:
+			return ref
 	
 	var save_data = FileAccess\
 		.open(_get_save_path(object_id), FileAccess.READ)\
@@ -33,8 +35,6 @@ static func load_from_save(object_id: int) -> WorldSpaceChunkType:
 	
 	var loaded_object = WorldSpaceChunkType.new()
 	loaded_object.id = save_data.id
-	
-	_items_by_id[object_id] = loaded_object
 	
 	return loaded_object
 
@@ -45,4 +45,5 @@ static func _get_save_path(object_id: int) -> String:
 
 
 func _init() -> void:
-	id = randi()
+	if id == 0:
+		id = randi()

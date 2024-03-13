@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://cdb2l5pxy8is7"]
+
+[ext_resource type="Script" path="res://modules/ui_rect2_emitter/rect_2_emitter.gd" id="1_d4jqa"]
+
+[node name="Rect2Emitter" type="VBoxContainer" node_paths=PackedStringArray("_position_x", "_position_y", "_size_x", "_size_y", "_button")]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_d4jqa")
+_position_x = NodePath("GridContainer/PosX")
+_position_y = NodePath("GridContainer/PosY")
+_size_x = NodePath("GridContainer/SizeX")
+_size_y = NodePath("GridContainer/SizeY")
+_button = NodePath("Button")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 2
+columns = 3
+
+[node name="PositionLabel" type="Label" parent="GridContainer"]
+layout_mode = 2
+text = "Position:"
+
+[node name="PosX" type="SpinBox" parent="GridContainer"]
+layout_mode = 2
+
+[node name="PosY" type="SpinBox" parent="GridContainer"]
+layout_mode = 2
+
+[node name="SizeLabel" type="Label" parent="GridContainer"]
+layout_mode = 2
+text = "Size:"
+
+[node name="SizeX" type="SpinBox" parent="GridContainer"]
+layout_mode = 2
+
+[node name="SizeY" type="SpinBox" parent="GridContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+text = "Emit"

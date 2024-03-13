@@ -2,7 +2,7 @@ class_name WorldSpaceChunkMapRegion
 extends Resource
 
 
-static var _items_by_id: Dictionary#[int, WorldSpaceChunkMapRegion]
+static var _items_by_id: Dictionary#[int, WeakRef[WorldSpaceChunkMapRegion]]
 
 
 @export var color: Color:
@@ -12,11 +12,11 @@ static var _items_by_id: Dictionary#[int, WorldSpaceChunkMapRegion]
 		
 		return _color8
 
-var id: int:
+@export var id: int:
 	set(v):
 		_items_by_id.erase(v)
 		id = v
-		_items_by_id[id] = self
+		_items_by_id[id] = weakref(self)
 
 var _color8: Color 
 
@@ -38,7 +38,9 @@ static func save(region: WorldSpaceChunkMapRegion) -> void:
 
 static func load_from_save(object_id: int) -> WorldSpaceChunkMapRegion:
 	if _items_by_id.has(object_id):
-		return _items_by_id[object_id]
+		var ref = _items_by_id[object_id].get_ref()
+		if ref != null:
+			return ref
 	
 	var save_data = FileAccess\
 		.open(_get_save_path(object_id), FileAccess.READ)\
@@ -57,4 +59,5 @@ static func _get_save_path(object_id: int) -> String:
 
 
 func _init() -> void:
-	id = randi()
+	if id == 0:
+		id = randi()

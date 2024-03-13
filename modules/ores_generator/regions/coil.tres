@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="WorldSpaceChunkMapRegion" load_steps=2 format=3 uid="uid://xcv7ge4nx5yy"]
+
+[ext_resource type="Script" path="res://modules/world_space/world_space_chunk_map_region.gd" id="1_qwsn7"]
+
+[resource]
+resource_name = "coil"
+script = ExtResource("1_qwsn7")
+color = Color(0.252028, 0.252028, 0.252028, 1)
+id = 2171355033

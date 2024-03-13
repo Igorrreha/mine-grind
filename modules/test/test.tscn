@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://g1lww2mf2dld"]
+[gd_scene load_steps=32 format=3 uid="uid://g1lww2mf2dld"]
 
 [ext_resource type="Script" path="res://modules/surface_chunks_generator/surface_chunks_generator.gd" id="1_8vn2s"]
 [ext_resource type="Resource" uid="uid://bd0coy2hunvpq" path="res://modules/test/world_space.tres" id="2_2q38h"]
@@ -9,9 +9,17 @@
 [ext_resource type="Script" path="res://modules/sprite_chunks_visualizer/sprite_chunks_visualizer.gd" id="7_tjowf"]
 [ext_resource type="TileSet" uid="uid://cciq6mwg25v4u" path="res://modules/test/test_tileset.tres" id="8_8ikj1"]
 [ext_resource type="Script" path="res://modules/tilemap_world_space_visualizer/tilemap_world_space_visualizer.gd" id="9_pmdxn"]
+[ext_resource type="Script" path="res://modules/ores_generator/ores_generator.gd" id="10_63bdq"]
 [ext_resource type="Script" path="res://modules/tilemap_world_space_visualizer/region_tile_props.gd" id="10_b20fh"]
+[ext_resource type="Resource" uid="uid://bjcx6llcev5e2" path="res://modules/ores_generator/ores.tres" id="11_eg6fp"]
 [ext_resource type="Script" path="res://modules/mouse_clicked_signal_emitter/mouse_clicked_signal_emitter.gd" id="11_wfd44"]
+[ext_resource type="Resource" uid="uid://xcv7ge4nx5yy" path="res://modules/ores_generator/regions/coil.tres" id="12_bekyr"]
 [ext_resource type="Script" path="res://modules/chunks_activity_controller/chunks_activity_controller.gd" id="12_k51cm"]
+[ext_resource type="Script" path="res://modules/world_space_saveloader/world_space_saveloader.gd" id="13_86a1n"]
+[ext_resource type="Resource" uid="uid://brgw7l2nrl01e" path="res://modules/world_space/void_region.tres" id="13_tcjdu"]
+[ext_resource type="PackedScene" uid="uid://do61rgwae033s" path="res://modules/topdown_moving_dummy/topdown_moving_dummy.tscn" id="18_1ohoe"]
+[ext_resource type="Script" path="res://modules/chunks_in_raidus_activity_maintainer/chunks_in_radius_activity_maintainer.gd" id="19_iwd7i"]
+[ext_resource type="PackedScene" uid="uid://cdb2l5pxy8is7" path="res://modules/ui_rect2_emitter/rect_2_emitter.tscn" id="20_653ou"]
 
 [sub_resource type="Resource" id="Resource_2fjef"]
 script = ExtResource("10_b20fh")
@@ -34,6 +42,13 @@ is_terrain = true
 terrain_id = 1
 tile_coords = Vector2i(10, 4)
 
+[sub_resource type="Resource" id="Resource_dpee3"]
+script = ExtResource("10_b20fh")
+atlas_id = 0
+is_terrain = false
+terrain_id = 0
+tile_coords = Vector2i(2, 16)
+
 [sub_resource type="Curve" id="Curve_0dxju"]
 max_value = 2.0
 _data = [Vector2(0, 0), 0.0, 5.0, 0, 1, Vector2(0.2, 1), 5.0, 1.53846, 1, 1, Vector2(0.85, 2), 1.53846, 0.0, 1, 0]
@@ -41,12 +56,44 @@ point_count = 3
 metadata/_snap_enabled = true
 metadata/_snap_count = 20
 
-[node name="Test" type="Node2D"]
+[sub_resource type="Curve" id="Curve_atrfw"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+metadata/_snap_enabled = true
+
+[sub_resource type="InputEventKey" id="InputEventKey_v8vjw"]
+device = -1
+pressed = true
+physical_keycode = 83
+unicode = 115
+
+[sub_resource type="InputEventKey" id="InputEventKey_a88iy"]
+device = -1
+pressed = true
+physical_keycode = 76
+unicode = 108
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_iqc2g"]
+radius = 150.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_p7esi"]
+radius = 100.0
+
+[sub_resource type="InputEventKey" id="InputEventKey_4wub1"]
+device = -1
+pressed = true
+keycode = 81
+physical_keycode = 81
+key_label = 81
+unicode = 113
+
+[node name="Test" type="Node"]
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = ExtResource("8_8ikj1")
 format = 2
 script = ExtResource("9_pmdxn")
+_active = false
 _world_space = ExtResource("2_2q38h")
 _tile_props_by_region = {
 ExtResource("4_qc4k0"): SubResource("Resource_2fjef"),
@@ -55,13 +102,36 @@ ExtResource("6_6buf6"): SubResource("Resource_a0nlr")
 }
 _displayed_chunk_types = Array[Resource("res://modules/world_space/world_space_chunk_type.gd")]([ExtResource("3_o2yar")])
 
-[node name="SurfaceGenerator" type="Node" parent="."]
+[node name="OresTilemap" type="TileMap" parent="."]
+tile_set = ExtResource("8_8ikj1")
+format = 2
+script = ExtResource("9_pmdxn")
+_active = false
+_world_space = ExtResource("2_2q38h")
+_tile_props_by_region = {
+ExtResource("12_bekyr"): SubResource("Resource_dpee3")
+}
+_displayed_chunk_types = Array[Resource("res://modules/world_space/world_space_chunk_type.gd")]([ExtResource("11_eg6fp")])
+
+[node name="Generators" type="Node" parent="."]
+
+[node name="Surface" type="Node" parent="Generators"]
 script = ExtResource("1_8vn2s")
 _world_space = ExtResource("2_2q38h")
 _chunk_type = ExtResource("3_o2yar")
 _grid_size = Vector2i(32, 32)
 _regions = Array[Resource("res://modules/world_space/world_space_chunk_map_region.gd")]([ExtResource("4_qc4k0"), ExtResource("5_md1w2"), ExtResource("6_6buf6")])
 _regions_distribution = SubResource("Curve_0dxju")
+
+[node name="Ores" type="Node" parent="Generators"]
+script = ExtResource("10_63bdq")
+_world_space = ExtResource("2_2q38h")
+_chunk_type = ExtResource("11_eg6fp")
+_surface_chunk_type = ExtResource("3_o2yar")
+_rock_region = ExtResource("4_qc4k0")
+_grid_size = Vector2i(32, 32)
+_regions = Array[Resource("res://modules/world_space/world_space_chunk_map_region.gd")]([ExtResource("13_tcjdu"), ExtResource("12_bekyr")])
+_regions_distribution = SubResource("Curve_atrfw")
 
 [node name="ChunksVisualizer" type="Node" parent="."]
 script = ExtResource("7_tjowf")
@@ -75,6 +145,50 @@ script = ExtResource("11_wfd44")
 script = ExtResource("12_k51cm")
 _world_space = ExtResource("2_2q38h")
 
-[connection signal="lmb_clicked_at" from="MouseClickedSignalEmitter" to="SurfaceGenerator" method="generate_at"]
+[node name="WorldSpaceSaveloader" type="Node" parent="."]
+script = ExtResource("13_86a1n")
+_world_space = ExtResource("2_2q38h")
+_save_input = SubResource("InputEventKey_v8vjw")
+_load_input = SubResource("InputEventKey_a88iy")
+
+[node name="TopDownMovingDummy" parent="." instance=ExtResource("18_1ohoe")]
+
+[node name="ChunksInRadiusActivityMaintainer" type="Node2D" parent="TopDownMovingDummy"]
+script = ExtResource("19_iwd7i")
+_world_space = ExtResource("2_2q38h")
+_outer_shape = SubResource("CircleShape2D_iqc2g")
+_inner_shape = SubResource("CircleShape2D_p7esi")
+_position_delta_to_rescan_outer = 80.0
+_position_delta_to_rescan_inner = 50.0
+_action = SubResource("InputEventKey_4wub1")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="Rect2Emitter" parent="UI" instance=ExtResource("20_653ou")]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120.5
+offset_top = -101.0
+offset_right = 120.5
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[connection signal="lmb_clicked_at" from="MouseClickedSignalEmitter" to="Generators/Surface" method="generate_at"]
+[connection signal="lmb_clicked_at" from="MouseClickedSignalEmitter" to="Generators/Ores" method="generate_at"]
 [connection signal="lmb_clicked_at" from="MouseClickedSignalEmitter" to="ChunksActivityController" method="activate_at"]
 [connection signal="rmb_clicked_at" from="MouseClickedSignalEmitter" to="ChunksActivityController" method="deactivate_at"]
+[connection signal="triggered" from="UI/Rect2Emitter" to="Generators/Surface" method="generate_chunks_rect"]
+[connection signal="triggered" from="UI/Rect2Emitter" to="Generators/Ores" method="generate_chunks_rect"]

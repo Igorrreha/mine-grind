@@ -5,14 +5,14 @@ extends Resource
 static var void_region := \
 	load("res://modules/world_space/void_region.tres") as WorldSpaceChunkMapRegion
 
-static var _items_by_id: Dictionary#[int, WorldSpaceChunkMap]
+static var _items_by_id: Dictionary#[int, WeakRef[WorldSpaceChunkMap]]
 
 
-var id: int:
+@export var id: int:
 	set(v):
 		_items_by_id.erase(v)
 		id = v
-		_items_by_id[id] = self
+		_items_by_id[id] = weakref(self)
 
 var image: Image
 var regions: Array[WorldSpaceChunkMapRegion]
@@ -94,7 +94,9 @@ static func save(map: WorldSpaceChunkMap) -> void:
 
 static func load_from_save(object_id: int) -> WorldSpaceChunkMap:
 	if _items_by_id.has(object_id):
-		return _items_by_id[object_id]
+		var ref = _items_by_id[object_id].get_ref()
+		if ref != null:
+			return ref
 	
 	var save_data = FileAccess\
 		.open(_get_save_path(object_id), FileAccess.READ)\
@@ -120,7 +122,8 @@ static func _get_save_path(object_id: int) -> String:
 
 
 func _init() -> void:
-	id = randi()
+	if id == 0:
+		id = randi()
 
 
 func get_region_at(position: Vector2i) -> WorldSpaceChunkMapRegion:
