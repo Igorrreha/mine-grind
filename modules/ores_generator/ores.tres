@@ -3,5 +3,6 @@
 [ext_resource type="Script" path="res://modules/world_space/world_space_chunk_type.gd" id="1_tq18k"]
 
 [resource]
+resource_name = "ores"
 script = ExtResource("1_tq18k")
 id = 123

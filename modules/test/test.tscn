@@ -21,6 +21,20 @@
 [ext_resource type="Script" path="res://modules/chunks_in_raidus_activity_maintainer/chunks_in_radius_activity_maintainer.gd" id="19_iwd7i"]
 [ext_resource type="PackedScene" uid="uid://cdb2l5pxy8is7" path="res://modules/ui_rect2_emitter/rect_2_emitter.tscn" id="20_653ou"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_iqc2g"]
+radius = 1500.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_p7esi"]
+radius = 750.0
+
+[sub_resource type="InputEventKey" id="InputEventKey_4wub1"]
+device = -1
+pressed = true
+keycode = 81
+physical_keycode = 81
+key_label = 81
+unicode = 113
+
 [sub_resource type="Resource" id="Resource_2fjef"]
 script = ExtResource("10_b20fh")
 atlas_id = 0
@@ -73,45 +87,67 @@ pressed = true
 physical_keycode = 76
 unicode = 108
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_iqc2g"]
-radius = 150.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_p7esi"]
-radius = 100.0
-
-[sub_resource type="InputEventKey" id="InputEventKey_4wub1"]
-device = -1
-pressed = true
-keycode = 81
-physical_keycode = 81
-key_label = 81
-unicode = 113
-
 [node name="Test" type="Node"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="SpriteChunksVisualizer" type="Node" parent="CanvasLayer"]
+script = ExtResource("7_tjowf")
+_world_space = ExtResource("2_2q38h")
+_displayed_chunk_types = Array[Resource("res://modules/world_space/world_space_chunk_type.gd")]([ExtResource("3_o2yar")])
+
+[node name="ChunksInRadiusActivityMaintainer" type="Node2D" parent="CanvasLayer"]
+position = Vector2(581, 446)
+script = ExtResource("19_iwd7i")
+_world_space = ExtResource("2_2q38h")
+_world_scale = Vector2i(16, 16)
+_outer_shape = SubResource("CircleShape2D_iqc2g")
+_inner_shape = SubResource("CircleShape2D_p7esi")
+_position_delta_to_rescan_outer = 400.0
+_position_delta_to_rescan_inner = 100.0
+_rescan_action = SubResource("InputEventKey_4wub1")
+
+[node name="UI" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="Rect2Emitter" parent="CanvasLayer/UI" instance=ExtResource("20_653ou")]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -120.5
+offset_top = -101.0
+offset_right = 120.5
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 0
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = ExtResource("8_8ikj1")
 format = 2
+layer_0/name = "surface"
+layer_0/navigation_enabled = false
+layer_1/name = "ores"
+layer_1/navigation_enabled = false
+layer_1/tile_data = PackedInt32Array()
 script = ExtResource("9_pmdxn")
-_active = false
 _world_space = ExtResource("2_2q38h")
 _tile_props_by_region = {
 ExtResource("4_qc4k0"): SubResource("Resource_2fjef"),
 ExtResource("5_md1w2"): SubResource("Resource_fmt0o"),
-ExtResource("6_6buf6"): SubResource("Resource_a0nlr")
-}
-_displayed_chunk_types = Array[Resource("res://modules/world_space/world_space_chunk_type.gd")]([ExtResource("3_o2yar")])
-
-[node name="OresTilemap" type="TileMap" parent="."]
-tile_set = ExtResource("8_8ikj1")
-format = 2
-script = ExtResource("9_pmdxn")
-_active = false
-_world_space = ExtResource("2_2q38h")
-_tile_props_by_region = {
+ExtResource("6_6buf6"): SubResource("Resource_a0nlr"),
 ExtResource("12_bekyr"): SubResource("Resource_dpee3")
 }
-_displayed_chunk_types = Array[Resource("res://modules/world_space/world_space_chunk_type.gd")]([ExtResource("11_eg6fp")])
+_displayed_chunk_types = Array[Resource("res://modules/world_space/world_space_chunk_type.gd")]([ExtResource("3_o2yar")])
 
 [node name="Generators" type="Node" parent="."]
 
@@ -133,13 +169,9 @@ _grid_size = Vector2i(32, 32)
 _regions = Array[Resource("res://modules/world_space/world_space_chunk_map_region.gd")]([ExtResource("13_tcjdu"), ExtResource("12_bekyr")])
 _regions_distribution = SubResource("Curve_atrfw")
 
-[node name="ChunksVisualizer" type="Node" parent="."]
-script = ExtResource("7_tjowf")
-_world_space = ExtResource("2_2q38h")
-_displayed_chunk_types = Array[Resource("res://modules/world_space/world_space_chunk_type.gd")]([ExtResource("3_o2yar")])
-
 [node name="MouseClickedSignalEmitter" type="Node" parent="."]
 script = ExtResource("11_wfd44")
+_is_active = false
 
 [node name="ChunksActivityController" type="Node" parent="."]
 script = ExtResource("12_k51cm")
@@ -152,43 +184,21 @@ _save_input = SubResource("InputEventKey_v8vjw")
 _load_input = SubResource("InputEventKey_a88iy")
 
 [node name="TopDownMovingDummy" parent="." instance=ExtResource("18_1ohoe")]
+position = Vector2(581, 446)
+_move_speed = 500.0
 
-[node name="ChunksInRadiusActivityMaintainer" type="Node2D" parent="TopDownMovingDummy"]
-script = ExtResource("19_iwd7i")
-_world_space = ExtResource("2_2q38h")
-_outer_shape = SubResource("CircleShape2D_iqc2g")
-_inner_shape = SubResource("CircleShape2D_p7esi")
-_position_delta_to_rescan_outer = 80.0
-_position_delta_to_rescan_inner = 50.0
-_action = SubResource("InputEventKey_4wub1")
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="TopDownMovingDummy"]
+remote_path = NodePath("../../CanvasLayer/ChunksInRadiusActivityMaintainer")
+update_rotation = false
+update_scale = false
 
-[node name="UI" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 8
-size_flags_vertical = 8
+[node name="Camera2D" type="Camera2D" parent="TopDownMovingDummy"]
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
 
-[node name="Rect2Emitter" parent="UI" instance=ExtResource("20_653ou")]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -120.5
-offset_top = -101.0
-offset_right = 120.5
-offset_bottom = 0.0
-grow_horizontal = 2
-grow_vertical = 0
-
+[connection signal="triggered" from="CanvasLayer/UI/Rect2Emitter" to="Generators/Surface" method="generate_chunks_rect"]
+[connection signal="triggered" from="CanvasLayer/UI/Rect2Emitter" to="Generators/Ores" method="generate_chunks_rect"]
 [connection signal="lmb_clicked_at" from="MouseClickedSignalEmitter" to="Generators/Surface" method="generate_at"]
 [connection signal="lmb_clicked_at" from="MouseClickedSignalEmitter" to="Generators/Ores" method="generate_at"]
 [connection signal="lmb_clicked_at" from="MouseClickedSignalEmitter" to="ChunksActivityController" method="activate_at"]
 [connection signal="rmb_clicked_at" from="MouseClickedSignalEmitter" to="ChunksActivityController" method="deactivate_at"]
-[connection signal="triggered" from="UI/Rect2Emitter" to="Generators/Surface" method="generate_chunks_rect"]
-[connection signal="triggered" from="UI/Rect2Emitter" to="Generators/Ores" method="generate_chunks_rect"]

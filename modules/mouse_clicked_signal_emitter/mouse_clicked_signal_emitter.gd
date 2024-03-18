@@ -11,7 +11,13 @@ signal lmb_clicked_at(global_position: Vector2i)
 signal rmb_clicked_at(global_position: Vector2i)
 
 
+@export var _is_active: bool = true
+
+
 func _input(event: InputEvent) -> void:
+	if not _is_active:
+		return
+	
 	if event is InputEventMouseButton and event.is_pressed():
 		event = event as InputEventMouseButton
 		

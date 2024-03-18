@@ -20,7 +20,7 @@ var rect: Rect2i:
 		shape = RectangleShape2D.new()
 		shape.size = rect.size
 		
-		transform = Transform2D(0, rect.position)
+		transform = Transform2D(0, rect.position + rect.size / 2)
 
 var shape: RectangleShape2D
 var transform: Transform2D
