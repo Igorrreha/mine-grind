@@ -11,6 +11,7 @@ extends TileMap
 
 var _chunk_operations_queue: Array[Callable]
 var _current_task_id: int = -1
+var _task_in_process: bool
 
 
 func _ready() -> void:
@@ -22,16 +23,19 @@ func _ready() -> void:
 	_world_space.chunk_deactivated.connect(_register_hide_chunk_operation)
 
 
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
-			visible = !visible
-
-
 func _process(_delta: float) -> void:
-	if not _chunk_operations_queue.is_empty()\
-	and (_current_task_id == -1 or WorkerThreadPool.is_task_completed(_current_task_id)):
+	if _task_in_process and WorkerThreadPool.is_task_completed(_current_task_id):
+		_current_task_id = -1
+		
+		# Dumb but cheap fix
+		rendering_quadrant_size = 16 if rendering_quadrant_size == 17 else 17
+		
+		_task_in_process = false
+
+	if not _task_in_process\
+	and not _chunk_operations_queue.is_empty():
 		_current_task_id = WorkerThreadPool.add_task(_chunk_operations_queue.pop_front())
+		_task_in_process = true
 
 
 func _mouse_to_tile_position() -> Vector2i:
@@ -67,6 +71,10 @@ func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> voi
 	for x in range(chunk.rect.position.x, chunk.rect.end.x):
 		for y in range(chunk.rect.position.y, chunk.rect.end.y):
 			var tile_position = Vector2i(x, y)
+			
+			if not chunk.is_active:
+				return
+			
 			var region = chunk.map.get_region_at(tile_position - chunk.rect.position)
 			
 			if not _tile_props_by_region.has(region):
@@ -84,10 +92,12 @@ func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> voi
 					tile_props.atlas_id,
 					tile_props.tile_coords)
 	
+	if not chunk.is_active:
+		return
+	
 	for terrain_set_id in terrain_members:
 		var tiles_to_connect = terrain_members[terrain_set_id]
-		set_cells_terrain_connect(layer_idx,
-			tiles_to_connect, 0, terrain_set_id, false)
+		set_cells_terrain_connect(layer_idx, tiles_to_connect, 0, terrain_set_id, false)
 
 
 func _is_tile_in_terrain(point: Vector2i, terrain_id: int, terrain_set_id: int,
