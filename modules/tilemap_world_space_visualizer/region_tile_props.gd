@@ -11,11 +11,17 @@ extends Resource
 		notify_property_list_changed()
 
 var tile_coords: Vector2i
+var terrain_set_id: int
 var terrain_id: int
 
 
 func _get_property_list() -> Array[Dictionary]:
 	var properties: Array[Dictionary]
+	properties.append({
+		"name": "terrain_set_id",
+		"type": TYPE_INT,
+		"usage": PROPERTY_USAGE_DEFAULT if is_terrain else PROPERTY_USAGE_NO_EDITOR,
+	})
 	properties.append({
 		"name": "terrain_id",
 		"type": TYPE_INT,

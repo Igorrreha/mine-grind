@@ -35,37 +35,41 @@ physical_keycode = 81
 key_label = 81
 unicode = 113
 
-[sub_resource type="Resource" id="Resource_2fjef"]
+[sub_resource type="Resource" id="Resource_bfxkk"]
 script = ExtResource("10_b20fh")
 atlas_id = 0
 is_terrain = false
+terrain_set_id = 0
+terrain_id = 0
+tile_coords = Vector2i(0, 6)
+
+[sub_resource type="Resource" id="Resource_k36or"]
+script = ExtResource("10_b20fh")
+atlas_id = 16
+is_terrain = true
+terrain_set_id = 0
+terrain_id = 0
+tile_coords = Vector2i(0, 0)
+
+[sub_resource type="Resource" id="Resource_horp4"]
+script = ExtResource("10_b20fh")
+atlas_id = 1
+is_terrain = true
+terrain_set_id = 0
+terrain_id = 1
+tile_coords = Vector2i(7, 1)
+
+[sub_resource type="Resource" id="Resource_wcnu6"]
+script = ExtResource("10_b20fh")
+atlas_id = 0
+is_terrain = false
+terrain_set_id = 0
 terrain_id = 0
 tile_coords = Vector2i(13, 1)
 
-[sub_resource type="Resource" id="Resource_fmt0o"]
-script = ExtResource("10_b20fh")
-atlas_id = 0
-is_terrain = true
-terrain_id = 0
-tile_coords = Vector2i(4, 4)
-
-[sub_resource type="Resource" id="Resource_a0nlr"]
-script = ExtResource("10_b20fh")
-atlas_id = 0
-is_terrain = true
-terrain_id = 1
-tile_coords = Vector2i(10, 4)
-
-[sub_resource type="Resource" id="Resource_dpee3"]
-script = ExtResource("10_b20fh")
-atlas_id = 0
-is_terrain = false
-terrain_id = 0
-tile_coords = Vector2i(2, 16)
-
 [sub_resource type="Curve" id="Curve_0dxju"]
 max_value = 2.0
-_data = [Vector2(0, 0), 0.0, 5.0, 0, 1, Vector2(0.2, 1), 5.0, 1.53846, 1, 1, Vector2(0.85, 2), 1.53846, 0.0, 1, 0]
+_data = [Vector2(0.1, 0), 0.0, 6.66667, 0, 1, Vector2(0.25, 1), 6.66667, 0.0, 1, 0, Vector2(0.65, 2), 0.0, 0.0, 0, 0]
 point_count = 3
 metadata/_snap_enabled = true
 metadata/_snap_count = 20
@@ -132,6 +136,8 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="TileMap" type="TileMap" parent="."]
+texture_filter = 1
+position = Vector2(-9, 0)
 tile_set = ExtResource("8_8ikj1")
 format = 2
 layer_0/name = "surface"
@@ -142,10 +148,15 @@ layer_1/tile_data = PackedInt32Array()
 script = ExtResource("9_pmdxn")
 _world_space = ExtResource("2_2q38h")
 _tile_props_by_region = {
-ExtResource("4_qc4k0"): SubResource("Resource_2fjef"),
-ExtResource("5_md1w2"): SubResource("Resource_fmt0o"),
-ExtResource("6_6buf6"): SubResource("Resource_a0nlr"),
-ExtResource("12_bekyr"): SubResource("Resource_dpee3")
+ExtResource("13_tcjdu"): SubResource("Resource_bfxkk"),
+ExtResource("5_md1w2"): SubResource("Resource_k36or"),
+ExtResource("6_6buf6"): SubResource("Resource_horp4"),
+ExtResource("4_qc4k0"): SubResource("Resource_wcnu6")
+}
+_layer_by_region = {
+ExtResource("5_md1w2"): 1,
+ExtResource("6_6buf6"): 1,
+ExtResource("4_qc4k0"): 0
 }
 _displayed_chunk_types = Array[Resource("res://modules/world_space/world_space_chunk_type.gd")]([ExtResource("3_o2yar")])
 
@@ -185,7 +196,7 @@ _load_input = SubResource("InputEventKey_a88iy")
 
 [node name="TopDownMovingDummy" parent="." instance=ExtResource("18_1ohoe")]
 position = Vector2(581, 446)
-_move_speed = 500.0
+_move_speed = 1000.0
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="TopDownMovingDummy"]
 remote_path = NodePath("../../CanvasLayer/ChunksInRadiusActivityMaintainer")
@@ -193,6 +204,7 @@ update_rotation = false
 update_scale = false
 
 [node name="Camera2D" type="Camera2D" parent="TopDownMovingDummy"]
+visibility_layer = 3
 position_smoothing_enabled = true
 position_smoothing_speed = 10.0
 
