@@ -103,7 +103,7 @@ func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> voi
 				terrain_members[region].append(tile_position)
 			else:
 				var layer_idx = _layer_by_region[region] as int
-				set_cell(layer_idx, tile_position,
+				_set_cell_async(layer_idx, tile_position,
 					tile_props.atlas_id,
 					tile_props.tile_coords)
 	
@@ -133,7 +133,8 @@ func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> voi
 			var atlas_coords = _get_best_fit(bitmask, tile_props.terrain_set_id,
 				tile_props.terrain_id)
 			
-			set_cell(layer_idx, tile_coords, tile_props.atlas_id, atlas_coords)
+			_set_cell_async(layer_idx, tile_coords, tile_props.atlas_id,
+				atlas_coords)
 	
 	
 #region Shitcode
@@ -146,11 +147,7 @@ func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> voi
 			var tile_props = _tile_props_by_region[tile_region] as RegionTileProps
 			var tile_coords = chunk.rect.position + tile_local_position
 			
-			var tile_data = get_cell_tile_data(layer_idx, tile_coords)
-			if not tile_data or tile_data.terrain == -1:
-				continue
-			
-			draw_tile(tile_coords, layer_idx, tile_props.atlas_id,
+			_fix_tile_async(tile_coords, layer_idx, tile_props.atlas_id,
 				tile_props.terrain_set_id, tile_props.terrain_id, true)
 	
 	for y in range(chunk.rect.size.y):
@@ -162,11 +159,7 @@ func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> voi
 			var tile_props = _tile_props_by_region[tile_region] as RegionTileProps
 			var tile_coords = chunk.rect.position + tile_local_position
 			
-			var tile_data = get_cell_tile_data(layer_idx, tile_coords)
-			if not tile_data or tile_data.terrain == -1:
-				continue
-			
-			draw_tile(tile_coords, layer_idx, tile_props.atlas_id,
+			_fix_tile_async(tile_coords, layer_idx, tile_props.atlas_id,
 				tile_props.terrain_set_id, tile_props.terrain_id, true)
 #endregion
 
@@ -187,3 +180,33 @@ func _hide_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> voi
 		for y in range(chunk.rect.position.y, chunk.rect.end.y):
 			var tile_position = Vector2i(x, y)
 			erase_cell(layer_idx, tile_position)
+
+
+func _fix_tile(tile_coords: Vector2i, layer: int, source_id: int,
+		terrain_set_id: int, terrain_id: int,
+		update_neighbors: bool = false, with_center_bit: bool = true) -> void:
+	var tile_data = get_cell_tile_data(layer, tile_coords)
+	if not tile_data or tile_data.terrain == -1:
+		return
+	
+	draw_tile(tile_coords, layer, source_id,
+		terrain_set_id, terrain_id,
+		update_neighbors, with_center_bit
+	)
+
+
+func _set_cell_async(layer: int, coords: Vector2i, source_id: int,
+		atlas_coords: Vector2i) -> void:
+	GlobalCoroutine.add_operation(set_cell.bind(
+		layer, coords, source_id, atlas_coords
+	))
+
+
+func _fix_tile_async(tile_coords: Vector2i, layer: int, source_id: int,
+		terrain_set_id: int, terrain_id: int,
+		update_neighbors: bool = false, with_center_bit: bool = true):
+	GlobalCoroutine.add_operation(_fix_tile.bind(
+		tile_coords, layer, source_id,
+		terrain_set_id, terrain_id,
+		update_neighbors, with_center_bit
+	))
