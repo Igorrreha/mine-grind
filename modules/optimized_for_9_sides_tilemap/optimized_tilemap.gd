@@ -99,13 +99,14 @@ func update_neighbors(tile_coords: Vector2i, layer: int, source_id: int,
 
 func get_bitmasks(tiles_coords: Array[Vector2i]) -> Dictionary:
 	var bitmask_by_tile_coords: Dictionary
-	for tile_coords in tiles_coords:
+	for tile_coords: Vector2i in tiles_coords:
 		bitmask_by_tile_coords[tile_coords] = 0
 	
-	for tile_coords in tiles_coords:
-		for bit_idx in range(_valid_neighbors.size()):
-			var neighbor_type = _valid_neighbors[bit_idx]
-			var neighbor_coords =\
+	var bit_idxs = range(_valid_neighbors.size())
+	for tile_coords: Vector2i in tiles_coords:
+		for bit_idx: int in bit_idxs:
+			var neighbor_type := _valid_neighbors[bit_idx]
+			var neighbor_coords: Vector2i =\
 				_position_from_neighbors[neighbor_type] + tile_coords
 			if not neighbor_coords in bitmask_by_tile_coords:
 				continue

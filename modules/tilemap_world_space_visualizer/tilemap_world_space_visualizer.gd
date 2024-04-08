@@ -10,13 +10,6 @@ extends OptimizedFor9SidesTileMap
 @export var _displayed_chunk_types: Array[WorldSpaceChunkType]
 
 
-var _chunk_operations_queue: Array[Callable]
-var _current_task_id: int = -1
-var _task_in_process: bool
-var _async_chunk_operations: bool = false
-var _max_tiles_per_frame: int = 100
-
-
 func _ready() -> void:
 	if not _active:
 		queue_free()
@@ -26,21 +19,6 @@ func _ready() -> void:
 	
 	_world_space.chunk_activated.connect(_register_show_chunk_operation)
 	_world_space.chunk_deactivated.connect(_register_hide_chunk_operation)
-
-
-func _process(_delta: float) -> void:
-	if _task_in_process and WorkerThreadPool.is_task_completed(_current_task_id):
-		_current_task_id = -1
-		
-		# Dumb but cheap fix
-		rendering_quadrant_size = 16 if rendering_quadrant_size == 17 else 17
-		
-		_task_in_process = false
-
-	if not _task_in_process\
-	and not _chunk_operations_queue.is_empty():
-		_current_task_id = WorkerThreadPool.add_task(_chunk_operations_queue.pop_front())
-		_task_in_process = true
 
 
 func _mouse_to_tile_position() -> Vector2i:
@@ -55,11 +33,7 @@ func _register_show_chunk_operation(chunk: WorldSpaceChunk,
 	if not _displayed_chunk_types.has(chunk_type):
 		return
 	
-	var operation = _show_chunk.bind(chunk, chunk_type)
-	if _async_chunk_operations:
-		_chunk_operations_queue.append(operation)
-	else:
-		operation.call()
+	GlobalCoroutine.add_operation(_show_chunk.bind(chunk, chunk_type))
 
 
 func _register_hide_chunk_operation(chunk: WorldSpaceChunk,
@@ -67,11 +41,7 @@ func _register_hide_chunk_operation(chunk: WorldSpaceChunk,
 	if not _displayed_chunk_types.has(chunk_type):
 		return
 	
-	var operation = _hide_chunk.bind(chunk, chunk_type)
-	if _async_chunk_operations:
-		_chunk_operations_queue.append(operation)
-	else:
-		operation.call()
+	GlobalCoroutine.add_operation(_hide_chunk.bind(chunk, chunk_type))
 
 
 func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> void:
@@ -80,8 +50,9 @@ func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> voi
 	
 	var terrain_members: Dictionary#[Region, Array[Vector2]]
 	
+	var y_range = range(chunk.rect.position.y, chunk.rect.end.y)
 	for x in range(chunk.rect.position.x, chunk.rect.end.x):
-		for y in range(chunk.rect.position.y, chunk.rect.end.y):
+		for y in y_range:
 			var tile_position = Vector2i(x, y)
 			
 			if not chunk.is_active:
@@ -138,8 +109,8 @@ func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> voi
 	
 	
 #region Shitcode
-	for x in range(chunk.rect.size.x):
-		for y in [0, chunk.rect.size.y - 1]:
+	for x: int in range(chunk.rect.size.x):
+		for y: int in [0, chunk.rect.size.y - 1]:
 			var tile_local_position = Vector2i(x, y)
 			var tile_region = chunk.map\
 				.get_region_at(tile_local_position) as WorldSpaceChunkMapRegion
@@ -150,8 +121,8 @@ func _show_chunk(chunk: WorldSpaceChunk, chunk_type: WorldSpaceChunkType) -> voi
 			_fix_tile_async(tile_coords, layer_idx, tile_props.atlas_id,
 				tile_props.terrain_set_id, tile_props.terrain_id, true)
 	
-	for y in range(chunk.rect.size.y):
-		for x in [0, chunk.rect.size.x - 1]:
+	for y: int in range(chunk.rect.size.y):
+		for x: int in [0, chunk.rect.size.x - 1]:
 			var tile_local_position = Vector2i(x, y)
 			var tile_region = chunk.map\
 				.get_region_at(tile_local_position) as WorldSpaceChunkMapRegion

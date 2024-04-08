@@ -16,6 +16,7 @@ static var _items_by_id: Dictionary#[int, WeakRef[WorldSpaceChunkMap]]
 
 var image: Image
 var regions: Array[WorldSpaceChunkMapRegion]
+var dirty: bool = true
 
 var _regions_by_color: Dictionary
 
@@ -72,6 +73,9 @@ static func create_from(map: WorldSpaceChunkMap,
 
 
 static func save(map: WorldSpaceChunkMap) -> void:
+	if not map.dirty:
+		return
+	
 	var save_path = _get_save_path(map.id)
 	var save_dir_path = save_path.get_base_dir()
 	if not DirAccess.dir_exists_absolute(save_dir_path):
@@ -88,6 +92,8 @@ static func save(map: WorldSpaceChunkMap) -> void:
 			"image_height": map.image.get_height(),
 		})
 	
+	map.dirty = false
+	
 	for region in map.regions:
 		WorldSpaceChunkMapRegion.save(region)
 
@@ -96,6 +102,7 @@ static func load_from_save(object_id: int) -> WorldSpaceChunkMap:
 	if _items_by_id.has(object_id):
 		var ref = _items_by_id[object_id].get_ref()
 		if ref != null:
+			ref.dirty = false
 			return ref
 	
 	var save_data = FileAccess\
@@ -113,6 +120,7 @@ static func load_from_save(object_id: int) -> WorldSpaceChunkMap:
 	
 	loaded_object.image = loaded_image
 	
+	loaded_object.dirty = false
 	return loaded_object
 
 
@@ -144,3 +152,4 @@ func set_region_at(region: WorldSpaceChunkMapRegion, position: Vector2i) -> void
 		_regions_by_color[region.color] = region
 	
 	image.set_pixel(position.x, position.y, region.color)
+	dirty = true
