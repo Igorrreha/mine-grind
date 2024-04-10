@@ -19,4 +19,4 @@ func _process(delta: float) -> void:
 	and Time.get_ticks_msec() - frame_start_time < _frame_time_limit_msec:
 		_operations_queue.pop_front().call()
 	
-	print(Time.get_ticks_msec() - frame_start_time)
+	#print(Time.get_ticks_msec() - frame_start_time)

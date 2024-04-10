@@ -21,13 +21,6 @@ func _ready() -> void:
 	_world_space.chunk_deactivated.connect(_register_hide_chunk_operation)
 
 
-func _mouse_to_tile_position() -> Vector2i:
-	var mouse_pos = get_viewport().get_mouse_position()
-	var view_offset = get_canvas_transform().origin
-	var tile_pos = local_to_map(to_local(mouse_pos - view_offset))
-	return tile_pos
-
-
 func _register_show_chunk_operation(chunk: WorldSpaceChunk,
 		chunk_type: WorldSpaceChunkType) -> void:
 	if not _displayed_chunk_types.has(chunk_type):

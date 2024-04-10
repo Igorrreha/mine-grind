@@ -1,10 +1,11 @@
-[gd_scene load_steps=32 format=3 uid="uid://g1lww2mf2dld"]
+[gd_scene load_steps=35 format=3 uid="uid://g1lww2mf2dld"]
 
 [ext_resource type="Script" path="res://modules/surface_chunks_generator/surface_chunks_generator.gd" id="1_8vn2s"]
 [ext_resource type="Resource" uid="uid://bd0coy2hunvpq" path="res://modules/test/world_space.tres" id="2_2q38h"]
 [ext_resource type="Resource" uid="uid://cvuc4m8u2fsy5" path="res://modules/test/chunk_types/surface.tres" id="3_o2yar"]
 [ext_resource type="Resource" uid="uid://tqivvlb1waoq" path="res://modules/surface_chunks_generator/regions/water.tres" id="4_qc4k0"]
 [ext_resource type="Resource" uid="uid://cepg5udhsckwt" path="res://modules/surface_chunks_generator/regions/land.tres" id="5_md1w2"]
+[ext_resource type="Script" path="res://modules/focused_tile_data_display/focused_tile_data_display.gd" id="6_3hk45"]
 [ext_resource type="Resource" uid="uid://co84dclbjbhw" path="res://modules/surface_chunks_generator/regions/mountain.tres" id="6_6buf6"]
 [ext_resource type="Script" path="res://modules/sprite_chunks_visualizer/sprite_chunks_visualizer.gd" id="7_tjowf"]
 [ext_resource type="TileSet" uid="uid://cciq6mwg25v4u" path="res://modules/test/test_tileset.tres" id="8_8ikj1"]
@@ -16,6 +17,7 @@
 [ext_resource type="Resource" uid="uid://xcv7ge4nx5yy" path="res://modules/ores_generator/regions/coil.tres" id="12_bekyr"]
 [ext_resource type="Script" path="res://modules/chunks_activity_controller/chunks_activity_controller.gd" id="12_k51cm"]
 [ext_resource type="Script" path="res://modules/world_space_saveloader/world_space_saveloader.gd" id="13_86a1n"]
+[ext_resource type="Script" path="res://modules/focused_tile_selector/focused_tile_selector.gd" id="13_j668y"]
 [ext_resource type="Resource" uid="uid://brgw7l2nrl01e" path="res://modules/world_space/void_region.tres" id="13_tcjdu"]
 [ext_resource type="PackedScene" uid="uid://do61rgwae033s" path="res://modules/topdown_moving_dummy/topdown_moving_dummy.tscn" id="18_1ohoe"]
 [ext_resource type="Script" path="res://modules/chunks_in_raidus_activity_maintainer/chunks_in_radius_activity_maintainer.gd" id="19_iwd7i"]
@@ -34,6 +36,8 @@ keycode = 81
 physical_keycode = 81
 key_label = 81
 unicode = 113
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yy7s1"]
 
 [sub_resource type="Resource" id="Resource_bfxkk"]
 script = ExtResource("10_b20fh")
@@ -135,9 +139,22 @@ offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 0
 
+[node name="FocusedTileDataDisplay" type="TextureRect" parent="CanvasLayer/UI" node_paths=PackedStringArray("_focused_tile_selector", "_tilemap")]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -128.0
+offset_bottom = 128.0
+grow_horizontal = 0
+texture = SubResource("AtlasTexture_yy7s1")
+script = ExtResource("6_3hk45")
+_focused_tile_selector = NodePath("../../../FocusedTileSelector")
+_tilemap = NodePath("../../../TileMap")
+
 [node name="TileMap" type="TileMap" parent="."]
 texture_filter = 1
-position = Vector2(-9, 0)
 tile_set = ExtResource("8_8ikj1")
 format = 2
 layer_0/name = "surface"
@@ -159,6 +176,10 @@ ExtResource("6_6buf6"): 1,
 ExtResource("4_qc4k0"): 0
 }
 _displayed_chunk_types = Array[Resource("res://modules/world_space/world_space_chunk_type.gd")]([ExtResource("3_o2yar")])
+
+[node name="FocusedTileSelector" type="Node2D" parent="." node_paths=PackedStringArray("_tilemap")]
+script = ExtResource("13_j668y")
+_tilemap = NodePath("../TileMap")
 
 [node name="Generators" type="Node" parent="."]
 
